@@ -6,6 +6,29 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Patient {
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  phone       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDecased   Boolean   @default(false)
+  facility   Facility @relation(fields: [facilityId], references: [id])
+  facilityId Int
+}
+
+model Facility {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  country     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  isDeleted   Boolean   @default(false)
+  patients    Patient[]
+}
+
