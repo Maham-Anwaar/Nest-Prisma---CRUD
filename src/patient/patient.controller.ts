@@ -3,7 +3,8 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  // Patch,
+  HttpCode,
   Param,
   Delete,
 } from '@nestjs/common';
@@ -15,17 +16,17 @@ export class PatientController {
   constructor(private readonly patientService: PatientService) {}
 
   @Post()
-  create(@Body() createPatientDto: Prisma.PatientCreateInput) {
+  async create(@Body() createPatientDto: Prisma.PatientCreateInput) {
     return this.patientService.create(createPatientDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.patientService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.patientService.findOne(+id);
   }
 
@@ -38,7 +39,18 @@ export class PatientController {
   // }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
     return this.patientService.remove(+id);
+  }
+
+  @Post('transfer')
+  @HttpCode(204)
+  async transferPatienttoAnotherFacility(
+    @Body() data: { patientId: string; targetFacilityId: string },
+  ) {
+    return this.patientService.transfer(
+      +data.patientId,
+      +data.targetFacilityId,
+    );
   }
 }

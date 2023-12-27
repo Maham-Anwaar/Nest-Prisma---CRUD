@@ -11,7 +11,9 @@ export class FacilityService {
   }
 
   async findAll() {
-    return this.databaseService.facility.findMany();
+    return this.databaseService.facility.findMany({
+      include: { patients: true },
+    });
   }
 
   async findOne(id: number) {

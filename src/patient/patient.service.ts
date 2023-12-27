@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
 import { Prisma } from '@prisma/client';
 
@@ -22,7 +22,24 @@ export class PatientService {
   //   return `This action updates a #${id} patient`;
   // }
 
-  remove(id: number) {
+  async remove(id: number) {
     return `This action removes a #${id} patient`;
+  }
+
+  async transfer(patientId: number, targetFacilityId: number): Promise<void> {
+    const patient = await this.databaseService.patient.findUnique({
+      where: { id: patientId },
+    });
+
+    if (!patient) {
+      throw new NotFoundException(`Patient with ID ${patientId} not found`);
+    }
+
+    await this.databaseService.patient.update({
+      where: { id: patientId },
+      data: {
+        facilityId: targetFacilityId,
+      },
+    });
   }
 }
